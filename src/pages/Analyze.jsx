@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import axios from 'axios'
 import imageIcon from '../assets/image-icon.svg'
 import Typewriter from 'typewriter-effect'
 
@@ -17,15 +18,32 @@ const Analyze = () => {
         precision: '89',
     })
 
+    let SERVER_ADDRESS = 'localhost:dadadadad5000'
+
     const analyze = () => {
         setIsLoading(true)
         setReleaseResult(false)
 
-        setTimeout(() => {
+        const formData = new FormData();
+
+        formData.append('image', image)
+        axios.post(`${SERVER_ADDRESS}/predict`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+        .then(response => {
+            console.log(response.data)
+
             setReleaseResult(true)
             setIsLoading(false)
-        }, 55000)
+        })
+        .catch(error => {
+            console.error(error)
+        });
+
     }
+
 
     useEffect(() => {
         if (checkerState) {
