@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import imageIcon from '../assets/image-icon.svg'
 import Typewriter from 'typewriter-effect'
+import { json } from 'react-router-dom'
+import { SERVER_ADDRESS } from '../../package.json'
 
 const Analyze = () => {
     const [image, setImage] = useState(null)
@@ -12,55 +14,90 @@ const Analyze = () => {
     const [recognized, setRecognized] = useState('Lion')
     const [error, setError] = useState(false)
     const [recognitionMetrics, setRecognitionMetrics] = useState({
-        accuracy: '100',
-        f1Score: '86',
-        recall: '92',
-        precision: '89',
+        precision: 0,
+        f1Score: 0,
+        accuracy: 0,
+        recall: 0,
     })
 
-    let SERVER_ADDRESS = 'localhost:dadadadad5000'
+
 
     const analyze = () => {
-        setIsLoading(true)
-        setReleaseResult(false)
-
+        setIsLoading(true);
+        setReleaseResult(false);
+    
         const formData = new FormData();
-
-        formData.append('image', image)
+        formData.append('image', fileName);
+    
         axios.post(`${SERVER_ADDRESS}/predict`, formData, {
             headers: {
-                'Content-Type': 'multipart/form-data'
-            }
+                'Content-Type': 'multipart/form-data',
+            },
         })
-        .then(response => {
-            console.log(response.data)
-
-            setReleaseResult(true)
-            setIsLoading(false)
-        })
-        .catch(error => {
-            console.error(error)
-        });
-
-    }
+            .then((response) => {
+                const results = response.data;
+                
+    
+                setRecognized(results.recognized);
+                console.log({
+                    'accuracy': results.accuracy, 
+                    'f1Score': results.f1Score, 
+                    'precision': results.precision, 
+                    'recall': results.recall, 
+                    'recognized': results.recognized
+                })
+    
+                setRecognitionMetrics({
+                    accuracy: (results.accuracy * 100).toFixed(2),
+                    f1Score: (results.f1Score * 100).toFixed(2),
+                    precision: (results.precision * 100).toFixed(2),
+                    recall: (results.recall * 100).toFixed(2),
+                });
+    
+                setReleaseResult(true);
+                setIsLoading(false);
+                
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+    
 
 
     useEffect(() => {
         if (checkerState) {
-            if (checkerState[0].type.includes('image/')) {
-                console.log('It is an image!')
+            const allowedFormats = ['image/jpeg', 'image/png', 'image/jpg']
+            
+            const fileTypeCheck = checkerState[0].type;
+            const fileNameCheck = checkerState[0].name;
+
+            const fileExtension = fileNameCheck.split('.').pop().toLowerCase()
+            
+            
+            if (allowedFormats.includes(fileTypeCheck) && ['jpeg', 'jpg', 'png'].includes(fileExtension)){
+                console.log('It is an allowed image format!');
                 console.log(checkerState)
                 setError(false)
                 setFileName(checkerState[0])
             } else {
-                console.log('oh noo it isnt')
+                console.log('File format not allowed');
                 setError(true)
                 setReleaseResult(false)
             }
         }
     }, [checkerState])
 
-    
+
+    useEffect(() => {
+        console.log(recognitionMetrics)
+        if (recognitionMetrics.accuracy || recognitionMetrics.f1Score || recognitionMetrics.recall || recognitionMetrics.precision) {
+            console.log('Metrics are available')
+            
+        } else {
+            console.log('Metrics are not available')
+        }
+    }, [recognitionMetrics])
 
     return (
         <div className="w-screen h-dvh bg-background px-7 py-4
@@ -124,14 +161,14 @@ const Analyze = () => {
                         </label>
                     ) :
                     (
-                        <label className="font-medium text-[#961909] text-base lg:text-xl xl:text-2xl 2xl:text-3xl font-['Fira_Code'] text-center">
+                        <label className="font-semibold text-[#961909] text-base lg:text-xl xl:text-2xl 2xl:text-3xl font-['Fira_Code'] text-center">
                             <Typewriter
                                     options={{
                                         cursorClassName: 'Typewriter__cursor text-accent font-black',
                                         cursor: '',
                                         strings: ['WARNING', 
                                             'Invalid File Format', 
-                                            'Image File Formats Only',
+                                            'Image File Formats: JPEG, PNG, and JPG Only',
                                             "Recognition process will not proceed until the error is fixed"],
                                         autoStart: true,
                                         loop: true
@@ -162,8 +199,7 @@ const Analyze = () => {
                                     .pauseFor(750)
                                     .typeString('<br/>')
                                     .pauseFor(500)
-                                    .typeString(`<br/>This result is obtained with <span style="color: #4B19F0; 
-                                        font-weight: 500;">${recognitionMetrics.accuracy}% Accuracy</span>, `)
+                                    .typeString(`<br/>This result is obtained with <span style="color: #4B19F0; font-weight: 500;">${recognitionMetrics.accuracy}% Accuracy</span>, `)
                                     .pauseFor(200)
                                     .typeString(`an <span style="color: #4B19F0; font-weight: 500;">F1 score of ${recognitionMetrics.f1Score}%</span>, `)
                                     .pauseFor(100)
