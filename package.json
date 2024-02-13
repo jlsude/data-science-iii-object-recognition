@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "SERVER_ADDRESS": "https://ds-be-object-recognition.onrender.com",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
