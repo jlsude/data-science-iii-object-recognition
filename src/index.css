@@ -7,14 +7,14 @@
 
 
 h1 {
-    @apply font-medium text-text text-2xl sm:text-3xl lg:font-semibold xl:text-4xl
+    @apply font-medium font-['Fira_Code'] text-text text-2xl sm:text-3xl lg:font-semibold xl:text-4xl
 }
 
 
 h3 {
-    @apply  font-normal text-text text-base lg:font-medium xl:text-lg
+    @apply  font-normal font-['Fira_Code'] text-text text-base lg:font-medium xl:text-lg
 }
 
 button {
-    @apply bg-primary font-medium text-base rounded-md px-8 py-2 disabled:opacity-60 disabled:cursor-not-allowed
+    @apply bg-primary font-['Fira_Code'] font-medium text-base rounded-md px-8 py-2 disabled:opacity-60 disabled:cursor-not-allowed
 }
