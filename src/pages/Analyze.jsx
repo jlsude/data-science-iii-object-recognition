@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import imageIcon from '../assets/image-icon.svg'
 import Typewriter from 'typewriter-effect'
-import { json } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { SERVER_ADDRESS } from '../../package.json'
 
 const Analyze = () => {
@@ -24,6 +24,7 @@ const Analyze = () => {
     const [correct, setCorrect] = useState(true)
     const [animalCorrection, setAnimalCorrection] = useState(null)
 
+    const navigate = useNavigate()
 
 
     const analyze = () => {
@@ -233,6 +234,19 @@ const Analyze = () => {
         console.log('Learning: ', animalCorrection)
     }, [animalCorrection])
 
+    const isAmongTheClassified = (predicted) => {
+
+        if (predicted === 'Jaguar') {
+            return true
+        } else if (predicted === 'Lion') {
+            return true
+        } else if (predicted === 'Tiger') {
+            return true
+        } else {
+            return false
+        }
+    }
+
 
     return (
         <div className="w-screen h-dvh bg-background px-7 py-4
@@ -322,38 +336,75 @@ const Analyze = () => {
                         <label className="font-regular text-text text-md font-['Fira_Code'] text-sm lg:text-base text-pretty">
                             {/* Result typewriter */}
                             {releaseResult ? <>
-                                <Typewriter
-                                    options={{
-                                        cursorClassName: 'Typewriter__cursor text-accent font-black',
-                                        delay: 60
-                                    }}
-                                    onInit={(typewriter) => {
-                                    typewriter
-                                        .pauseFor(2000)
-                                        .typeString('The uploaded image bears a resembksnxe to a')
-                                        .pauseFor(300)
-                                        .deleteChars(10)
-                                        .typeString('lance to a ')
-                                        .typeString(`<strong><span style="color: #4B19F0; font-weight: 500;">${recognized} Predator</span></strong>.`)
-                                        .pauseFor(750)
-                                        .typeString('<br/>')
-                                        .pauseFor(500)
-                                        .typeString(`<br/>This result is obtained with <span style="color: #4B19F0; font-weight: 500;">${recognitionMetrics.accuracy}% Accuracy</span>, `)
-                                        .pauseFor(200)
-                                        .typeString(`an <span style="color: #4B19F0; font-weight: 500;">F1 score of ${recognitionMetrics.f1Score}%</span>, `)
-                                        .pauseFor(100)
-                                        .typeString(`a <span style="color: #4B19F0; font-weight: 500;">Recall of ${recognitionMetrics.recall}%</span> `)
-                                        .typeString(`and a <span style="color: #4B19F0; font-weight: 500;">Precision Score of 9%@^$</span>`)
-                                        .deleteChars(5)
-                                        .typeString(`<span style="color: #4B19F0; font-weight: 500">${recognitionMetrics.precision}%</span>.`)
-                                        .pauseFor(3000)
-                                        .callFunction(() => {
-                                            setShowLearning(true)
-                                        })
-                                        .start();
-                                    }}
-                                
-                                />
+                                {isAmongTheClassified(recognized) ? <>
+                                    <Typewriter
+                                        options={{
+                                            cursorClassName: 'Typewriter__cursor text-accent font-black',
+                                            delay: 60
+                                        }}
+                                        onInit={(typewriter) => {
+                                        typewriter
+                                            .pauseFor(2000)
+                                            .typeString('The uploaded image bears a resembksnxe to a')
+                                            .pauseFor(300)
+                                            .deleteChars(10)
+                                            .typeString('lance to a ')
+                                            .typeString(`<strong><span style="color: #4B19F0; font-weight: 500;">${recognized} Predator</span></strong>.`)
+                                            .pauseFor(750)
+                                            .typeString('<br/>')
+                                            .pauseFor(500)
+                                            .typeString(`<br/>This result is obtained with <span style="color: #4B19F0; font-weight: 500;">${recognitionMetrics.accuracy}% Accuracy</span>, `)
+                                            .pauseFor(200)
+                                            .typeString(`an <span style="color: #4B19F0; font-weight: 500;">F1 score of ${recognitionMetrics.f1Score}%</span>, `)
+                                            .pauseFor(100)
+                                            .typeString(`a <span style="color: #4B19F0; font-weight: 500;">Recall of ${recognitionMetrics.recall}%</span> `)
+                                            .typeString(`and a <span style="color: #4B19F0; font-weight: 500;">Precision Score of 9%@^$</span>`)
+                                            .deleteChars(5)
+                                            .typeString(`<span style="color: #4B19F0; font-weight: 500">${recognitionMetrics.precision}%</span>.`)
+                                            .pauseFor(3000)
+                                            .callFunction(() => {
+                                                setShowLearning(true)
+                                            })
+                                            .start();
+                                        }
+                                    }
+                                    
+                                    />
+                                    
+                                </> : <>
+                                    <Typewriter
+                                        options={{
+                                            cursorClassName: 'Typewriter__cursor text-accent font-black',
+                                            delay: 60
+                                        }}
+                                        onInit={(typewriter) => {
+                                        typewriter
+                                            .pauseFor(2000)
+                                            .typeString('The uploaded image bears a resembksnxe to a')
+                                            .pauseFor(300)
+                                            .deleteChars(10)
+                                            .typeString('lance to a ')
+                                            .typeString(`<strong><span style="color: #4B19F0; font-weight: 500;">${recognized}</span></strong>.`)
+                                            .typeString('<br/>')
+                                            .typeString('<br/>')
+                                            .pauseFor(750)
+                                            .typeString('The image inputted was <strong><span style="color: #4B19F0; font-weight: 500;">not</span></strong> among the animal classified by this model.')
+                                            .pauseFor(3000)
+                                            .typeString('<br/>')
+                                            .typeString('<br/>')
+                                            .typeString('initiating refresh...')
+                                            .callFunction(() => {
+                                                //setShowLearning(true)
+                                                setTimeout(() => {
+                                                    navigate(0)
+                                                }, 3000)
+                                            })
+                                            .start();
+                                        }
+                                    }
+                                    
+                                    />
+                                </>}
                             </> : null}
                         </label>
 
