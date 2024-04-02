@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import imageIcon from '../assets/image-icon.svg'
 import Typewriter from 'typewriter-effect'
-import { json } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { SERVER_ADDRESS } from '../../package.json'
 
 const Analyze = () => {
@@ -19,10 +19,13 @@ const Analyze = () => {
         accuracy: 0,
         recall: 0,
     })
-
+    const [predictedProbability, setPredictedProbability] = useState(null)
+    const [notAmongClasses, setNotAmongClasses] = useState(false)
     const [showLearning, setShowLearning] = useState(false)
     const [correct, setCorrect] = useState(true)
     const [animalCorrection, setAnimalCorrection] = useState(null)
+
+    const navigate = useNavigate()
 
 
 
@@ -48,8 +51,11 @@ const Analyze = () => {
                     'f1Score': results.f1Score, 
                     'precision': results.precision, 
                     'recall': results.recall, 
-                    'recognized': results.recognized
+                    'recognized': results.recognized,
+                    'classesProbabilities': results.classesProbabilities,
+                    'predictedProbability': results.predictedProbability
                 })
+
     
                 setRecognitionMetrics({
                     accuracy: (results.accuracy * 100).toFixed(2),
@@ -57,6 +63,8 @@ const Analyze = () => {
                     precision: (results.precision * 100).toFixed(2),
                     recall: (results.recall * 100).toFixed(2),
                 });
+
+                setPredictedProbability(results.predictedProbability)
     
                 setReleaseResult(true);
                 setIsLoading(false);
@@ -233,6 +241,14 @@ const Analyze = () => {
         console.log('Learning: ', animalCorrection)
     }, [animalCorrection])
 
+    useEffect(() => {
+        console.log('Predicted Probability: ', predictedProbability)
+        if (predictedProbability < 0.5 || isNaN(predictedProbability)) {
+            console.log('The image inputted is not a among the classes the model is trained with')
+            setNotAmongClasses(true)
+        }
+    }, [predictedProbability])
+
 
     return (
         <div className="w-screen h-dvh bg-background px-7 py-4
@@ -255,19 +271,38 @@ const Analyze = () => {
                         {!error ? (   
                             <label className="font-medium text-text text-base lg:text-xl xl:text-2xl 2xl:text-3xl font-['Fira_Code'] text-center">
                                 {releaseResult ? <>
-                                    <Typewriter
-                                        options={{
-                                            cursorClassName: 'Typewriter__cursor text-accent font-black',
-                                            cursor: ''
-                                        }}
-                                        onInit={(typewriter) => {
-                                        typewriter
-                                            .pauseFor(1000)
-                                            .typeString(`Recognized as a ${recognized}`)
-                                            .start();
-                                        }}
-                                    
-                                    />
+                                    {!notAmongClasses ? <>
+                                        <Typewriter
+                                            options={{
+                                                cursorClassName: 'Typewriter__cursor text-accent font-black',
+                                                cursor: ''
+                                            }}
+                                            onInit={(typewriter) => {
+                                            typewriter
+                                                .pauseFor(1000)
+                                                .typeString(`Recognized as a ${recognized}`)
+                                                .start();
+                                            }}
+                                        
+                                        />
+                                    </> : <>
+                                        <label className="font-semibold text-[#961909] text-base lg:text-xl xl:text-2xl 2xl:text-3xl font-['Fira_Code'] text-center">
+                                            <Typewriter
+                                                options={{
+                                                    cursorClassName: 'Typewriter__cursor text-accent font-black',
+                                                    cursor: ''
+                                                }}
+                                                onInit={(typewriter) => {
+                                                typewriter
+                                                    .pauseFor(1000)
+                                                    .typeString(`Image can not be recognized`)
+                                                    .start();
+                                                }}
+                                            
+                                            />
+                                        </label>
+                                        
+                                    </>}
                                 </> : null}
                                 {isLoading ? <>
                                     <label className="font-regular text-accent text-md font-['Fira_Code']">
@@ -322,38 +357,71 @@ const Analyze = () => {
                         <label className="font-regular text-text text-md font-['Fira_Code'] text-sm lg:text-base text-pretty">
                             {/* Result typewriter */}
                             {releaseResult ? <>
-                                <Typewriter
-                                    options={{
-                                        cursorClassName: 'Typewriter__cursor text-accent font-black',
-                                        delay: 60
-                                    }}
-                                    onInit={(typewriter) => {
-                                    typewriter
-                                        .pauseFor(2000)
-                                        .typeString('The uploaded image bears a resembksnxe to a')
-                                        .pauseFor(300)
-                                        .deleteChars(10)
-                                        .typeString('lance to a ')
-                                        .typeString(`<strong><span style="color: #4B19F0; font-weight: 500;">${recognized} Predator</span></strong>.`)
-                                        .pauseFor(750)
-                                        .typeString('<br/>')
-                                        .pauseFor(500)
-                                        .typeString(`<br/>This result is obtained with <span style="color: #4B19F0; font-weight: 500;">${recognitionMetrics.accuracy}% Accuracy</span>, `)
-                                        .pauseFor(200)
-                                        .typeString(`an <span style="color: #4B19F0; font-weight: 500;">F1 score of ${recognitionMetrics.f1Score}%</span>, `)
-                                        .pauseFor(100)
-                                        .typeString(`a <span style="color: #4B19F0; font-weight: 500;">Recall of ${recognitionMetrics.recall}%</span> `)
-                                        .typeString(`and a <span style="color: #4B19F0; font-weight: 500;">Precision Score of 9%@^$</span>`)
-                                        .deleteChars(5)
-                                        .typeString(`<span style="color: #4B19F0; font-weight: 500">${recognitionMetrics.precision}%</span>.`)
-                                        .pauseFor(3000)
-                                        .callFunction(() => {
-                                            setShowLearning(true)
-                                        })
-                                        .start();
-                                    }}
+                                {!notAmongClasses ? <>
+                                    <Typewriter
+                                        options={{
+                                            cursorClassName: 'Typewriter__cursor text-accent font-black',
+                                            delay: 60
+                                        }}
+                                        onInit={(typewriter) => {
+                                        typewriter
+                                            .pauseFor(2000)
+                                            .typeString('The uploaded image bears a resembksnxe to a')
+                                            .pauseFor(300)
+                                            .deleteChars(10)
+                                            .typeString('lance to a ')
+                                            .typeString(`<strong><span style="color: #4B19F0; font-weight: 500;">${recognized} Predator</span></strong>.`)
+                                            .pauseFor(750)
+                                            .typeString('<br/>')
+                                            .pauseFor(500)
+                                            .typeString(`<br/>This result is obtained with <span style="color: #4B19F0; font-weight: 500;">${recognitionMetrics.accuracy}% Accuracy</span>, `)
+                                            .pauseFor(200)
+                                            .typeString(`an <span style="color: #4B19F0; font-weight: 500;">F1 score of ${recognitionMetrics.f1Score}%</span>, `)
+                                            .pauseFor(100)
+                                            .typeString(`a <span style="color: #4B19F0; font-weight: 500;">Recall of ${recognitionMetrics.recall}%</span> `)
+                                            .typeString(`and a <span style="color: #4B19F0; font-weight: 500;">Precision Score of 9%@^$</span>`)
+                                            .deleteChars(5)
+                                            .typeString(`<span style="color: #4B19F0; font-weight: 500">${recognitionMetrics.precision}%</span>.`)
+                                            .pauseFor(3000)
+                                            .callFunction(() => {
+                                                setShowLearning(true)
+                                            })
+                                            .start();
+                                        }}
+                                    
+                                    />
+                                </> : <>
+                                    <Typewriter
+                                        options={{
+                                            cursorClassName: 'Typewriter__cursor text-accent font-black',
+                                            delay: 60
+                                        }}
+                                        onInit={(typewriter) => {
+                                        typewriter
+                                            .pauseFor(2000)
+                                            .typeString('The uploaded image appears to be <strong><span style="color: #4B19F0; font-weight: 500;">not</span></strong> ')
+                                            .typeString('among the classes the <strong><span style="color: #4B19F0; font-weight: 500;">model</span></strong> is trained with. ')
+                                            .pauseFor(2000)
+                                            .typeString('<br/>')
+                                            .typeString('<br/>')
+                                            .typeString('Initiating refresh....')
+                                            // .typeString('<br/>')
+                                            // .pauseFor(500)
+                                            // .typeString('This conclusion is based on the <strong><span style="color: #4B19F0; font-weight: 500;">predicted probability</span></strong> of the model.')
+                                            
+                                            .callFunction(() => {
+                                                //setShowLearning(true)
+                                                setTimeout(() => {
+                                                    navigate(0)
+                                                }, 5000)
+                                            })
+                                            .start();
+                                        }}
+                                    
+                                    />
                                 
-                                />
+                                </>
+                                }
                             </> : null}
                         </label>
 
