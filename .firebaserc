@@ -5,8 +5,8 @@
   "targets": {
     "portfolio-website-2ea6c": {
       "hosting": {
-        "predator-image-recognition": [
-          "predator-image-recognition"
+        "mammal-species-classification": [
+          "mammal-species-classification"
         ]
       }
     }
