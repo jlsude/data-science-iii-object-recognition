@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import predator from "../assets/predator-image.svg";
+import TextCaraousel from "../components/TextCaraousel";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -22,14 +23,18 @@ const Landing = () => {
                 bg-primary blur-3xl w-[30rem] h-auto aspect-square opacity-10"
       />
 
+      <TextCaraousel className={"w-full h-[40px] z-10 mt-12 absolute"} />
+
       <div
         className="z-10 row-start-3 col-span-5 flex flex-col justify-between sm:justify-around
                 md:row-start-2 md:col-span-1 md:col-end-2 md:justify-self-end
                 lg:w-auto xl:w-[500px]
             "
       >
-        <h1>Mammal Species Classification</h1>
-        <h3 className="text-justify">
+        <h1 className="font-semibold text-wrap">
+          Mammal Species Classification
+        </h1>
+        <h3 className="text-left">
           A machine learning project that uses a Convolutional Neural Network
           (CNN) to identify 42 species of mammals.
         </h3>

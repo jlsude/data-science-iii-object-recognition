@@ -5,18 +5,6 @@
   "targets": {
     "portfolio-website-2ea6c": {
       "hosting": {
-        "jlsude": [
-          "jlsude"
-        ],
-        "johnlouiesude": [
-          "johnlouiesude"
-        ],
-        "heart-attack-analysis": [
-          "heart-attack-analysis"
-        ],
-        "smoker-or-not": [
-          "smoker-or-not"
-        ],
         "predator-image-recognition": [
           "predator-image-recognition"
         ]
