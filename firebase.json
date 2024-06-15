@@ -1,12 +1,8 @@
 {
   "hosting": {
-    "site": "predator-image-recognition",
+    "site": "mammal-species-classification",
     "source": ".",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
         "source": "**",
@@ -18,4 +14,3 @@
     }
   }
 }
-
