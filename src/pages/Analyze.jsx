@@ -22,7 +22,7 @@ const Analyze = () => {
   const [model, setModel] = useState(null);
   const [maxPredictions, setMaxPredictions] = useState(null);
 
-  const modelLink = "https://teachablemachine.withgoogle.com/models/pSigxzReh/";
+  const modelLink = "https://teachablemachine.withgoogle.com/models/FWAocq8mR/";
 
   useEffect(() => {
     if (checkerState) {
@@ -57,7 +57,7 @@ const Analyze = () => {
 
   const analyze = async () => {
     setIsLoading(true);
-    setPredictedClass(false);
+    setPredictedClass("");
 
     // const formData = new FormData();
     // formData.append("image", imageFile);
@@ -76,7 +76,7 @@ const Analyze = () => {
       let probability = sortedPrediction[0].probability * 100;
 
       // console.log(prediction);
-      // console.log(sortedPrediction[0]);
+      console.log(sortedPrediction);
 
       setPredictedProb(probability.toFixed(3));
       setIsLoading(false);
