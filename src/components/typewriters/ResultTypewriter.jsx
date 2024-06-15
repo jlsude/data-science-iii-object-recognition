@@ -1,12 +1,19 @@
 import Typewriter from "typewriter-effect";
 
 export default function ResultTypewriter({ predictedClass, predictedProb }) {
+  function getArticle(predictedClass) {
+    if (!predictedClass) return "a";
+    const firstLetter = predictedClass[0].toLowerCase();
+    return "aeiou".includes(firstLetter) ? "an" : "a";
+  }
+
+  const article = getArticle(predictedClass);
 
   return (
     <Typewriter
       options={{
         cursorClassName: "Typewriter__cursor text-accent font-black",
-        delay: 60,
+        delay: 30,
       }}
       onInit={(typewriter) => {
         typewriter
@@ -14,9 +21,9 @@ export default function ResultTypewriter({ predictedClass, predictedProb }) {
           .typeString("The uploaded image bears a resembksnxe to a")
           .pauseFor(300)
           .deleteChars(10)
-          .typeString("lance to a ")
+          .typeString(`lance to ${article} `)
           .typeString(
-            `<strong><span style="color: #4B19F0; font-weight: 500;">${predictedClass} mammal</span></strong>.`
+            `<strong><span style="color: #4B19F0; font-weight: 500;">${predictedClass.toLowerCase()} mammal</span></strong>.`
           )
           .pauseFor(750)
           .typeString("<br/>")
